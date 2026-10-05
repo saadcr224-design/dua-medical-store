@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1790443790936,
+      "tag": "0000_freezing_loki",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1790445275971,
+      "tag": "0001_thin_runaways",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1790528783229,
+      "tag": "0002_bored_blizzard",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1790529763784,
+      "tag": "0003_little_killraven",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1790530710729,
+      "tag": "0004_spooky_kinsey_walden",
+      "breakpoints": true
+    }
+  ]
+}

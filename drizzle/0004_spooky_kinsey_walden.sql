@@ -1,0 +1,1 @@
+ALTER TABLE `medicines` ADD `packSize` integer DEFAULT 0 NOT NULL;

@@ -1,0 +1,11 @@
+import ts from 'typescript';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {pathToFileURL} from 'node:url';import assert from 'node:assert/strict';
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),'dua-bulk-')),file=path.join(dir,'bulk.mjs');fs.writeFileSync(file,ts.transpileModule(fs.readFileSync('lib/bulk-import.ts','utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText);const {csvRecords,medicineRows,fileFingerprint}=await import(pathToFileURL(file));
+const text='name,formula,price,unit,stock\r\n"QA, example","Line 1\nLine ""2""",25,Tablet,10\r\n';
+const bytes=new TextEncoder().encode(text);const chunked={stream(){let i=0;return new ReadableStream({pull(c){if(i===bytes.length)c.close();else c.enqueue(bytes.slice(i,i+=1))}})}};
+const records=[];for await(const r of csvRecords(chunked))records.push(r);assert.equal(records[1][1],'Line 1\nLine "2"');
+const parsed=[];for await(const r of medicineRows(new Blob([text])))parsed.push(r);assert.equal(parsed[0].error,'');assert.equal(parsed[0].medicine.price,2500);
+await assert.rejects(async()=>{for await(const r of csvRecords(new Blob(['a,b\n"unfinished']))){}},/Unclosed/);
+const invalid=[];for await(const r of medicineRows(new Blob(['name,formula,price\nQA,,-3\n'])))invalid.push(r);assert.match(invalid[0].error,/Row 2/);
+const a=new Blob(['a'.repeat(1100000)]),b=new Blob(['a'.repeat(550000)+'b'+'a'.repeat(549999)]);assert.equal(await fileFingerprint(a),await fileFingerprint(a));assert.notEqual(await fileFingerprint(a),await fileFingerprint(b));
+let count=0;for await(const r of medicineRows(new Blob(['name,formula,price\n','QA,Fixture,1\n'.repeat(100000)]))){assert.equal(r.error,'');count++;}assert.equal(count,100000);
+console.log('PASS: streaming CSV chunk boundaries, quoted newlines, escaped quotes, invalid rows, complete-file fingerprints and 100,000-row traversal.');fs.rmSync(dir,{recursive:true});

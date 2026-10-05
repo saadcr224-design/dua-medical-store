@@ -1,0 +1,10 @@
+import ts from 'typescript';import fs from 'node:fs';import assert from 'node:assert/strict';
+const code=ts.transpileModule(fs.readFileSync('lib/formula-lookup.ts','utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText;
+const {lookupFormula}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+const mock=(tty,ingredients=['Ingredient A'],ids=['123'])=>async url=>({ok:true,json:async()=>url.includes('?search=')?{idGroup:{rxnormId:ids}}:url.includes('properties')?{properties:{tty,name:'Example'}}:{relatedGroup:{conceptGroup:[{tty:'IN',conceptProperties:ingredients.map(name=>({name}))}]}}});
+assert.equal((await lookupFormula('Example',mock('SBD'))).formula,'Ingredient A');
+assert.equal((await lookupFormula('Example',mock('BN',['A','B']))).formula,'');
+assert.equal((await lookupFormula('Example',mock('SBD',[],['123','456']))).formula,'');
+assert.equal((await lookupFormula('Example',mock('IN'))).formula,'Example');
+await assert.rejects(()=>lookupFormula('Example',async()=>({ok:false})));
+console.log('PASS: exact lookup, ambiguous brand rejection, multiple matches and provider failure.');
