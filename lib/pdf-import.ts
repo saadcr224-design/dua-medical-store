@@ -1,7 +1,7 @@
 export function textItemsToRows(items:any[]){const lines:{y:number;items:any[]}[]=[];for(const item of items){if(typeof item.str!=='string'||!item.str.trim())continue;const y=item.transform[5],existing=lines.find(l=>Math.abs(l.y-y)<3);if(existing)existing.items.push(item);else lines.push({y,items:[item]})}return lines.sort((a,b)=>b.y-a.y).map(line=>{const sorted=line.items.sort((a,b)=>a.transform[4]-b.transform[4]);let cells:string[]=[],cell='',right=-Infinity;for(const it of sorted){const x=it.transform[4];if(cell&&x-right>12){cells.push(cell.trim());cell=''}cell+=(cell?' ':'')+it.str;right=Math.max(right,x+it.width)}if(cell)cells.push(cell.trim());return cells.join('\t')}).filter(Boolean)}
 export async function extractPDF(file:File,onProgress:(s:string)=>void,workerSrc='/vendor/pdfjs-6.3.289/pdf.worker.min.mjs',signal?:AbortSignal,forceOCR=false){
  if(file.size>100*1024*1024)throw new Error('Use PDFs up to 100 MB each. Split larger files and continue importing.');
- const pdfModule='/vendor/pdfjs-6.3.289/pdf.min.mjs';const pdfjs=await import(/* @vite-ignore */ pdfModule);pdfjs.GlobalWorkerOptions.workerSrc=workerSrc;
+ const pdfModule='/vendor/pdfjs-6.3.289/pdf.min.mjs';const pdfjs=await import(/* webpackIgnore: true */ /* @vite-ignore */ pdfModule);pdfjs.GlobalWorkerOptions.workerSrc=workerSrc;
  const task=pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer()),useWasm:false,standardFontDataUrl:'/pdf-fonts/',cMapUrl:'/pdf-cmaps/',cMapPacked:true});
  let ocr:Awaited<ReturnType<typeof import('./ocr')['createOCR']>>|undefined;let activeRender:any;
  const abort=()=>{activeRender?.cancel();void task.destroy()};signal?.addEventListener('abort',abort,{once:true});

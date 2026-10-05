@@ -5,9 +5,6 @@ export const metadata: Metadata = {
   title: "DUA MEDICAL STORE",
   description: "Medicine inventory, barcode billing and store management.",
   manifest: "/manifest.webmanifest",
-  other: {
-    "codex-preview": "development",
-  },
   icons: {
     icon: "/dua-favicon-v2.png",
     shortcut: "/dua-favicon-v2.png",

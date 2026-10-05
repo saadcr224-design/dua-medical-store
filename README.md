@@ -1,3 +1,7 @@
+# DUA Medical Store
+
+Vercel/Netlify deployment: see [GITHUB-DEPLOYMENT.md](GITHUB-DEPLOYMENT.md). The instructions below describe the original Sites backend and retained source history; the default build is now standard Next.js.
+
 # vinext-starter
 
 A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
