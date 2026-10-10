@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "pnpm exec next build --webpack"
   publish = ".next"
 [build.environment]
   NODE_VERSION = "22"
