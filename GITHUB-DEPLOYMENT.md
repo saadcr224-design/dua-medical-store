@@ -7,7 +7,7 @@ This repository now builds a standard Next.js application using `npm run build` 
 Connect this repository's `main` branch. Root directory must be the repository root, not `app`. Remove old dashboard build-command overrides that run Vinext/Vite, and clear the old build cache once.
 
 - Vercel: Next.js framework; build `npm run build`; output `.next`. `vercel.json` supplies these settings.
-- Netlify: build `npm run build`; publish `.next`; use the current automatic Next.js adapter. `netlify.toml` supplies the build, publish and Node settings. Remove any manually pinned legacy Next.js plugin or `NETLIFY_NEXT_PLUGIN_SKIP` override.
+- Netlify: build `pnpm exec next build --webpack`; publish `.next`; use the current automatic Next.js adapter. `netlify.toml` supplies the build, publish and Node settings. The explicit Next.js command keeps the deployment independent of retained Vinext/Vite tooling and changes to the package build script. Remove any manually pinned legacy Next.js plugin or `NETLIFY_NEXT_PLUGIN_SKIP` override.
 - Node: 22.x. Keep the committed pnpm lockfile and package manager version.
 
 Connected hosting providers can build future pushes to main when automatic Git deployments are enabled in their dashboards. This repository does not configure those account settings.
@@ -26,6 +26,8 @@ The proxy validates browser write origins, forwards only the store session cooki
 This is a shared-backend deployment, not an independent database migration. Original Cloudflare backend source remains in Git history; database helper files remain in this repository for reference. Do not replace the original Sites backend with the proxy routes: that would create a loop. Backend changes must be applied and published through Sites separately.
 
 ## Validation
+
+`node --test tests/deployment-config.test.mjs` checks that Netlify invokes Next.js directly, publishes `.next`, and retains standard Next.js package scripts and output settings without running a production build.
 
 `npm run build` generates the production manifest and both API routes. `node tests/hosting-proxy.test.mjs` checks forwarding, session cookies, origin protection, authentication errors and backend failures (Node 22.18+).
 
